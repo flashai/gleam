@@ -1,33 +1,29 @@
-import fs from "fs";
-import yt from "youtube-dl";
-import path from "path";
+import videoService from "../services/video";
 
-const create = (req, res) => {
-  const { url } = req.params;
+const { HOST, PORT } = process.env;
+
+async function create(req, res) {
+  const { url } = req.body;
 
   try {
-    const video = yt(url, ["--format=18"], { cwd: __dirname });
+    // Save video to tmp
+    const video_dest = await videoService.download(url);
 
-    // Default name
-    let video_name = "video.mp4";
+    res.send({ success: true, url: `${HOST}/${video_dest}` });
 
-    // Once video begins download
-    video.on("info", info => {
-      video_name = info.filename;
+    // Send video to normalize
+    // Returns normalized video dest
 
-      console.log("Download started");
-      console.log("filename: " + info.filename);
-      console.log("size: " + info.size);
-    });
-
-    // Video destination
-    const dest = path.resolve(`tmp/${video_name}`);
-
-    // Piping video into dest
-    video.pipe(fs.createWriteStream(dest));
+    /*
+    const normalized_dest = await videoService.normalize(url);
+  
+    const normalize_video = `${HOST}:${PORT}/${normalized_dest}`;
+  
+    res.send({ success: true, url: normalize_video });
+    */
   } catch (e) {
-    res.send({ success: false, e });
+    res.send({ success: false, error: e.message });
   }
-};
+}
 
 export default { create };

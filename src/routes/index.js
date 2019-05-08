@@ -6,6 +6,6 @@ const router = Router();
 
 router.get("/", (req, res) => res.send("Happy Hacking! 🚀"));
 
-router.get("/normalize", video.create);
+router.post("/normalize", video.create);
 
 export { router };

@@ -1,23 +1,24 @@
-import './env';
-import './db';
+import "./env";
 
-import express from 'express';
-import bodyParser from 'body-parser';
-import helmet from 'helmet';
-import cors from 'cors';
+import express from "express";
+import bodyParser from "body-parser";
+import helmet from "helmet";
+import cors from "cors";
 
-import { router } from './routes';
+import { router } from "./routes";
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
+app.use("/tmp", express.static("tmp"));
+
 app.use(cors());
 app.use(helmet());
-app.use(bodyParser.json());
-app.disable('x-powered-by');
-app.use(bodyParser.urlencoded({ extended: false }));
+app.disable("x-powered-by");
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
 
-app.use('/', router);
+app.use("/", router);
 
 app.listen(PORT, console.log(`> Listening on ${PORT}`));
